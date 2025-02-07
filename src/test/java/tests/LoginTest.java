@@ -1,5 +1,4 @@
 package tests;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
@@ -14,11 +13,10 @@ public class LoginTest {
 
     @BeforeMethod
     public void setup() {
-        System.setProperty("webdriver.chrome.driver","C:/Users/Jayami/Downloads/chromedriver-win64/chromedriver-win64/chromedriver.exe"); // Set the correct path
+        System.setProperty("webdriver.chrome.driver","C:/Users/Jayami/Downloads/chromedriver-win64/chromedriver-win64/chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login"); // Change if needed
-
+        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
         loginPage = new LoginPage(driver);
     }
 
@@ -27,13 +25,14 @@ public class LoginTest {
         loginPage.enterUsername("invalidUser");
         loginPage.enterPassword("invalidPass");
         loginPage.clickLogin();
-
         String expectedError = "Invalid credentials";
         Assert.assertEquals(loginPage.getErrorMessage(), expectedError, "Error message mismatch!");
     }
 
     @AfterMethod
     public void tearDown() {
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
