@@ -10,42 +10,53 @@ public class LoginPage {
     WebDriver driver;
     WebDriverWait wait;
 
-    // Constructor
     public LoginPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(20)); // Increased timeout
     }
 
     // Locators
-    By username = By.name("username");  // Using more reliable locators
+    By username = By.name("username");
     By password = By.name("password");
     By loginButton = By.cssSelector("button[type='submit']");
-    By errorMessage = By.xpath("/html/body/div[1]/div[1]/div/div[1]/div/div[2]/div[2]/div/div[1]/div[1]/p");
+    By errorMessage = By.cssSelector(".oxd-alert-content-text");
+    By dashboardHeader = By.cssSelector(".oxd-topbar-header-breadcrumb");
 
-    // Actions
     public void enterUsername(String user) {
-        wait.until(ExpectedConditions.presenceOfElementLocated(username)).sendKeys(user);
+        wait.until(ExpectedConditions.elementToBeClickable(username)).clear();
+        wait.until(ExpectedConditions.elementToBeClickable(username)).sendKeys(user);
     }
 
     public void enterPassword(String pass) {
-        wait.until(ExpectedConditions.presenceOfElementLocated(password)).sendKeys(pass);
+        wait.until(ExpectedConditions.elementToBeClickable(password)).clear();
+        wait.until(ExpectedConditions.elementToBeClickable(password)).sendKeys(pass);
     }
 
     public void clickLogin() {
         wait.until(ExpectedConditions.elementToBeClickable(loginButton)).click();
+        sleep(3000); // Wait after clicking login
     }
 
     public String getErrorMessage() {
-        // Wait a bit after clicking login before looking for the error message
+        sleep(2000); // Wait for error message animation
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText();
+    }
+
+    public boolean isLoginSuccessful() {
+        sleep(2000); // Wait for page load
         try {
-            Thread.sleep(1000); // Small delay to allow the error message to appear
+            WebElement dashboard = wait.until(ExpectedConditions.visibilityOfElementLocated(dashboardHeader));
+            return dashboard.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        // Now wait for the error message to be present AND visible
-        WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(errorMessage));
-        wait.until(ExpectedConditions.visibilityOf(element));
-        return element.getText();
     }
 }
